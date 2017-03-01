@@ -57,12 +57,20 @@ class veeam_val::install {
         failovermethod => 'priority',
       }
 
-      file { '/etc/pki/rpm-gpg/VeeamSoftwareRepo':
+      file { '/etc/pki/rpm-gpg/RPM-GPG-KEY-VeeamSoftwareRepo':
         ensure => present,
         owner  => 'root',
         group  => 'root',
         mode   => '0644',
         source => 'puppet:///modules/veeam_val/RPM-GPG-KEY-VeeamSoftwareRepo',
+      } ->
+
+      file { '/etc/pki/rpm-gpg/VeeamSoftwareRepo':
+        ensure => present,
+        owner  => 'root',
+        group  => 'root',
+        mode   => '0644',
+        source => 'puppet:///modules/veeam_val/VeeamSoftwareRepo',
       } ->
 
       yumrepo { 'veeam':
