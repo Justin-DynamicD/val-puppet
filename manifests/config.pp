@@ -73,13 +73,7 @@ class veeam_val::config (
         command => "${service_cmd} vbrserver add --name '${vbrname}' --address '${vbrserver}' --port '${vbrserverport}' --login '${username}' --domain '${domain}' --password '${password}'",
         unless  => "${service_cmd} vbrserver list | /bin/grep -c ${vbrname}",
       }
-
-      # Create the backup job with the correct settings
-      exec { 'create_job':
-        command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --objects '${objects}'",
-        unless  => "${service_cmd} job list | /bin/grep -c ${jobname}",
-        require => Exec['create_vbrserver'],
-      }
+ 
     } else {
       # Create the backup directory if not present
       # using exec as puppet can't make all missing dirs recursively
@@ -131,8 +125,9 @@ class veeam_val::config (
         command => "${service_cmd} repository create --name '${reponame}' --location '${repopath}'",
         unless  => "${service_cmd} repository list | /bin/grep -c ${reponame}",
       }
+    } # End Create repository
 
-      # Create the backup job with the correct settings
+    # Create the backup job with the correct settings
       if ($type != 'entire') {
         exec { 'create_job':
           command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --objects '${objects}'",
@@ -147,7 +142,6 @@ class veeam_val::config (
           require => Exec['create_repository'],
         }
       }
-    }
 
     if $schedule {
       # Only create the cron file when the Veeam Agent for Linux is installed
