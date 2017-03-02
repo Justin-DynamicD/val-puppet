@@ -135,7 +135,7 @@ class veeam_val::config (
           command => "${service_cmd} job delete --name '${jobname}'",
         }
 
-        file { '/etc/cron.d/veeam.cron':
+        file { "/etc/cron.d/veeam_${jobname}":
           ensure  => absent,
         }
       }
@@ -158,13 +158,13 @@ class veeam_val::config (
 
     if $schedule and ($job_ensure != 'absent') {
       # Only create the cron file when the Veeam Agent for Linux is installed
-      file { '/etc/cron.d/veeam.cron':
+      file { "/etc/cron.d/veeam_${jobname}":
         ensure  => present,
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
         require => [Package[$pkg_name],Exec['create_job']],
-        content => "# Created by Puppet.\n${schedulecron} root ${service_cmd} job start --name '${jobname}' --retriable --highpriority";
+        content => "# Created by Puppet.\n${schedulecron} ${service_cmd} job start --name '${jobname}' --retriable --highpriority",
       }
     }
   }
