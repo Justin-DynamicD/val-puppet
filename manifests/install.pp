@@ -3,8 +3,8 @@
 # This class provides the main installation.
 #
 # = Author
-#
-# Niels Engelen <niels@foonet.be>
+# Justin King <jking@lanterncredit.com>
+# forked from Niels Engelen <niels@foonet.be>
 #
 class veeam_val::install {
   # Get all packages installed properly

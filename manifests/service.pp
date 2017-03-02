@@ -3,8 +3,8 @@
 # This class makes sure the service is running.
 #
 # = Author
-#
-# Niels Engelen <niels@foonet.be>
+# Justin King <jking@lanterncredit.com>
+# forked from Niels Engelen <niels@foonet.be>
 #
 class veeam_val::service {
   # Make sure the veeam service is running

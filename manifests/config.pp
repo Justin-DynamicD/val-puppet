@@ -1,8 +1,8 @@
 # === Class veeam_val::config
 #
 # = Author
-#
-# Niels Engelen <niels@foonet.be>
+# Justin King <jking@lanterncredit.com>
+# forked from Niels Engelen <niels@foonet.be>
 #
 class veeam_val::config (
   $service_cmd     = $::veeam_val::service_cmd,
@@ -30,6 +30,7 @@ class veeam_val::config (
   $username        = $::veeam_val::username,
   $password        = $::veeam_val::password,
 
+  $job_ensure      = $::veeam_val::job_ensure, 
   $type            = $::veeam_val::type,
   $jobname         = $::veeam_val::jobname,
   $blocksize       = $::veeam_val::blocksize,
@@ -69,9 +70,9 @@ class veeam_val::config (
 
     if $target == 'vbrserver' {
       # Add the Veeam Backup & Replication server
-      exec { 'create_vbrserver':
+      exec { 'create_repository':
         command => "${service_cmd} vbrserver add --name '${vbrname}' --address '${vbrserver}' --port '${vbrserverport}' --login '${username}' --domain '${domain}' --password '${password}'",
-        unless  => "${service_cmd} vbrserver list | /bin/grep -c ${vbrname}",
+        unless  => "${service_cmd} vbrserver info --name '${vbrname}'",
       }
  
     } else {
@@ -127,23 +128,34 @@ class veeam_val::config (
       }
     } # End Create repository
 
-    # Create the backup job with the correct settings
-      if ($type != 'entire') {
+      # clear existing job if job_ensure is set to absent, this allows jobs to be reset.
+      if ($job_ensure == 'absent') {
+        exec { 'remove_job':
+          command => "${service_cmd} job delete --name '${jobname}'",
+        }
+
+        file { '/etc/cron.d/veeam.cron':
+          ensure  => absent,
+        }
+      }
+
+      # Create the backup job with the correct settings
+      if ($type != 'entire') and ($job_ensure != 'absent') {
         exec { 'create_job':
           command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --objects '${objects}'",
-          unless  => "${service_cmd} job list | /bin/grep -c ${jobname}",
+          unless  => "${service_cmd} job info ${jobname}",
           require => Exec['create_repository'],
         }
       }
-      else {
+      elsif ($type == 'entire') and ($job_ensure != 'absent') {
         exec { 'create_job':
           command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --backupAllSystem'",
-          unless  => "${service_cmd} job list | /bin/grep -c ${jobname}",
+          unless  => "${service_cmd} job info ${jobname}",
           require => Exec['create_repository'],
         }
       }
 
-    if $schedule {
+    if $schedule and ($job_ensure != 'absent') {
       # Only create the cron file when the Veeam Agent for Linux is installed
       file { '/etc/cron.d/veeam.cron':
         ensure  => present,

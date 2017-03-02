@@ -1,8 +1,8 @@
 # === Class veeam_val::params
 #
 # = Author
-#
-# Niels Engelen <niels@foonet.be>
+# Justin King <jking@lanterncredit.com>
+# forked from Niels Engelen <niels@foonet.be>
 #
 class veeam_val::params {
   # Define all default parameters
@@ -31,6 +31,7 @@ class veeam_val::params {
   $username       = ''
   $password       = ''
 
+  $job_ensure     = 'present'
   $type           = 'volume'
   $jobname        = 'VeeamBackupJob_Puppet'
   $blocksize      = 4096

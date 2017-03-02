@@ -21,6 +21,7 @@
 #   username      => Login for target authentication       (DEFAULT: none)
 #   password      => Password for target authentication    (DEFAULT: none)
 #
+#   job_ensure    => present, absent                       (DEFAULT: none)
 #	type	   	  => File, volume or entire                (DEFAULT: none)
 #   jobname       => Job name                              (DEFAULT: none)
 # 	blocksize     => 256|512|1024|4096                     (DEFAULT: 4096)
@@ -98,6 +99,7 @@ class veeam_val (
   $username       = $::veeam_val::params::username,
   $password       = $::veeam_val::params::password,
 
+  $job_ensure      = $::veeam_val::job_ensure, 
   $type           = $::veeam_val::params::type,
   $jobname        = $::veeam_val::params::jobname,
   $compression    = $::veeam_val::params::compression,
