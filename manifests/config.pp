@@ -131,6 +131,7 @@ class veeam_val::config (
       # clear existing job if job_ensure is set to absent, this allows jobs to be reset.
       if ($job_ensure == 'absent') {
         exec { 'remove_job':
+          onlyif  => "${service_cmd} job info --name '${jobname}'",
           command => "${service_cmd} job delete --name '${jobname}'",
         }
 
