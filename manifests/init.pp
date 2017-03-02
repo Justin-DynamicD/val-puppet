@@ -99,7 +99,7 @@ class veeam_val (
   $username       = $::veeam_val::params::username,
   $password       = $::veeam_val::params::password,
 
-  $job_ensure      = $::veeam_val::job_ensure, 
+  $job_ensure     = $::veeam_val::params::job_ensure, 
   $type           = $::veeam_val::params::type,
   $jobname        = $::veeam_val::params::jobname,
   $compression    = $::veeam_val::params::compression,

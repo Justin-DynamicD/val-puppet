@@ -143,14 +143,14 @@ class veeam_val::config (
       if ($type != 'entire') and ($job_ensure != 'absent') {
         exec { 'create_job':
           command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --objects '${objects}'",
-          unless  => "${service_cmd} job info ${jobname}",
+          unless  => "${service_cmd} job info --name ${jobname}",
           require => Exec['create_repository'],
         }
       }
       elsif ($type == 'entire') and ($job_ensure != 'absent') {
         exec { 'create_job':
-          command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --backupAllSystem'",
-          unless  => "${service_cmd} job info ${jobname}",
+          command => "${service_cmd} job create --name '${jobname}' --repoName '${reponame}' --postjob '${postjob}' --prejob '${prejob}' --compressionLevel ${compression} --maxPoints ${points} --backupAllSystem",
+          unless  => "${service_cmd} job info --name ${jobname}",
           require => Exec['create_repository'],
         }
       }
